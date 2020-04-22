@@ -21,7 +21,7 @@ func checkForErr(err error){
 		panic("cheepcheep: error")
 	}
 }
-func loadROM(rom string, chp Cheep8){
+func loadROM(rom string, chp Cheep8) Cheep8{
 	chp.pc = 0x200
 	dat, err := os.Open(rom)
 	checkForErr(err)
@@ -32,12 +32,16 @@ func loadROM(rom string, chp Cheep8){
 	for i := 0; i < 4096-512; i++ { // some space for a compiler
 		chp.mem[i+int(chp.pc)] = temp[i]	
 	}
-	fmt.Println(chp.mem)
+	return chp
 }
 
 func Process(chp Cheep8){
-	opcode := uint16(chp.mem[chp.pc] << 8) | uint16(chp.mem[chp.pc + 1]) // two-byte opcodes
-	//fmt.Println(opcode)
+	part1 := uint16(chp.mem[chp.pc])
+	part2 := uint16(chp.mem[chp.pc+1])
+	opcode := part1 | part2
+	fmt.Println(opcode)
+	fmt.Println(part1)
+	fmt.Println(part2)
 	Interpret(chp, opcode)
 	chp.pc = chp.pc + 2
 }
@@ -45,16 +49,15 @@ func Process(chp Cheep8){
 func Interpret(chp Cheep8, opcode uint16){
 	switch opcode{
 	default:
-		//hexopc := fmt.Sprintf("%x", opcode)
-		//fmt.Println("Bad opcode ", hexopc)
-		break
+		hexopc := fmt.Sprintf("%x", opcode)
+		fmt.Println("cheepcheep: bad opcode ", hexopc)
+		panic("cheepcheep: bad opcode")
 	}
 }
 
 func main(){
 	var chp Cheep8
-	loadROM("pong.ch8", chp)
-	fmt.Println(chp.mem)
+	chp = loadROM("pong.ch8", chp)
 	for ;;{
 		Process(chp)
 	}
