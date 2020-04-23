@@ -28,7 +28,7 @@ func loadROM(rom string, chp Cheep8) Cheep8{
 	temp := make([]byte, 4096)
 	n, err := dat.Read(temp)
 	checkForErr(err)
-	fmt.Println("debug: got ", n, " bytes of data")
+	fmt.Println("debug: got", n, "bytes of data")
 	for i := 0; i < 4096-512; i++ { // some space for a compiler
 		chp.mem[i+int(chp.pc)] = temp[i]	
 	}
@@ -36,13 +36,12 @@ func loadROM(rom string, chp Cheep8) Cheep8{
 }
 
 func Process(chp Cheep8){
-	part1 := uint16(chp.mem[chp.pc])
-	part2 := uint16(chp.mem[chp.pc+1])
-	opcode := part1 | part2
-	fmt.Println(opcode)
-	fmt.Println(part1)
-	fmt.Println(part2)
-	Interpret(chp, opcode)
+	chp.pc = chp.pc + 2
+	chp.opc = uint16(chp.mem[chp.pc]) // here's the bug, opcode assumed to be uint8
+	chp.opc <<= 8
+	chp.opc |= uint16(chp.mem[chp.pc+1])
+	fmt.Println(chp.opc)
+	Interpret(chp, uint16(chp.opc))
 	chp.pc = chp.pc + 2
 }
 
