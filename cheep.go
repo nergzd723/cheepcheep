@@ -1,9 +1,19 @@
 package main
 
+
 import(
 	"os"
 	"fmt"
 )
+
+
+
+var nnn uint16
+var n uint16
+var x uint16
+var y uint16
+var kk uint16
+
 type Cheep8 struct {
     mem [4096]byte
     registers [16]byte
@@ -35,29 +45,37 @@ func loadROM(rom string, chp Cheep8) Cheep8{
 	return chp
 }
 
-func Process(chp Cheep8){
-	chp.pc = chp.pc + 2
+func Process(chp Cheep8) Cheep8{
 	chp.opc = uint16(chp.mem[chp.pc]) // here's the bug, opcode assumed to be uint8
 	chp.opc <<= 8
 	chp.opc |= uint16(chp.mem[chp.pc+1])
 	fmt.Println(chp.opc)
-	Interpret(chp, uint16(chp.opc))
-	chp.pc = chp.pc + 2
+	chp = Interpret(chp, uint16(chp.opc))
+	chp.pc +=  2
+	return chp
 }
 
-func Interpret(chp Cheep8, opcode uint16){
-	switch opcode{
+func Interpret(chp Cheep8, opcode uint16) Cheep8{
+	x = (opcode & 0x0F00) >> 8
+	nnn = opcode & 0x0FFF
+	n = opcode & 0x000F
+	y = (opcode & 0x00F0) >> 4
+	kk = opcode & 0x00FF	
+	switch opcode & 0xF000{ // get only first one
+	case 0x6000:
+		chp.registers[x] = uint8(kk)
 	default:
 		hexopc := fmt.Sprintf("%x", opcode)
-		fmt.Println("cheepcheep: bad opcode ", hexopc)
+		fmt.Println("cheepcheep: bad opcode", hexopc)
 		panic("cheepcheep: bad opcode")
 	}
+	return chp
 }
 
 func main(){
 	var chp Cheep8
 	chp = loadROM("pong.ch8", chp)
 	for ;;{
-		Process(chp)
+		chp = Process(chp)
 	}
 }
