@@ -6,8 +6,6 @@ import(
 	"fmt"
 )
 
-
-
 var nnn uint16
 var n uint16
 var x uint16
@@ -31,7 +29,7 @@ func checkForErr(err error){
 		panic("cheepcheep: error")
 	}
 }
-func loadROM(rom string, chp Cheep8) Cheep8{
+func loadROM(rom string, chp *Cheep8){
 	chp.pc = 0x200
 	dat, err := os.Open(rom)
 	checkForErr(err)
@@ -42,20 +40,19 @@ func loadROM(rom string, chp Cheep8) Cheep8{
 	for i := 0; i < 4096-512; i++ { // some space for a compiler
 		chp.mem[i+int(chp.pc)] = temp[i]	
 	}
-	return chp
 }
 
-func Process(chp Cheep8) Cheep8{
+func Process(chp *Cheep8){
 	chp.opc = uint16(chp.mem[chp.pc]) // here's the bug, opcode assumed to be uint8
 	chp.opc <<= 8
 	chp.opc |= uint16(chp.mem[chp.pc+1])
 	fmt.Println(chp.opc)
-	chp = Interpret(chp, uint16(chp.opc))
+	Interpret(chp)
 	chp.pc +=  2
-	return chp
 }
 
-func Interpret(chp Cheep8, opcode uint16) Cheep8{
+func Interpret(chp *Cheep8){
+	opcode := chp.opc
 	x = (opcode & 0x0F00) >> 8
 	nnn = opcode & 0x0FFF
 	n = opcode & 0x000F
@@ -69,13 +66,12 @@ func Interpret(chp Cheep8, opcode uint16) Cheep8{
 		fmt.Println("cheepcheep: bad opcode", hexopc)
 		panic("cheepcheep: bad opcode")
 	}
-	return chp
 }
 
 func main(){
 	var chp Cheep8
-	chp = loadROM("pong.ch8", chp)
+	loadROM("pong.ch8", &chp)
 	for ;;{
-		chp = Process(chp)
+		Process(&chp)
 	}
 }
