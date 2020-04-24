@@ -83,8 +83,7 @@ func Interpret(chp *Cheep8){
 		}
 	case 0x7000:
 		if (jit){
-			add := AssembleAddition(x, kk)
-			chp.registers[x] = add()
+			AssembleAddition(x, kk, chp)
 		}
 	default:
 		hexopc := fmt.Sprintf("%x", opcode)
