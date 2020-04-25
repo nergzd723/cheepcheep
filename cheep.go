@@ -46,7 +46,6 @@ func ldfont(chp *Cheep8) error{
 	for count, bt := range font {
 		chp.mem[count] = uint8(bt)
 	}
-	fmt.Println(chp.mem)
 	return nil
 }
 func checkForErr(err error){
@@ -160,7 +159,7 @@ func Interpret(chp *Cheep8){
 
 func main(){
 	var chp Cheep8
-	jit = false
+	jit = true
 	loadROM("pong.ch8", &chp)
 	for ;;{
 		Process(&chp)

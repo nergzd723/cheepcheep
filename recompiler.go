@@ -1,27 +1,37 @@
 package main
 
 import(
-	"syscall"
-	"unsafe"
 	"fmt"
+	"github.com/nelhage/gojit"
+	"strconv"
+	"encoding/binary"
 )
 
 func AssembleAddition(kk uint16, vx uint16, chp *Cheep8){
-	FunctionCode := []uint16{
-		0x488b, 0x0425, (uint16)(), 0x0, 0x488b, 0x1425, *(*uint16)(unsafe.Pointer(&vx)), 0x0, 0x4801, 0xc2, 0x4889, 0x0425, *(*uint16)(unsafe.Pointer(&vx)), 0x0, 0x00c3,
-	   }
-	memory, err := syscall.Mmap(-1, 0, 64, syscall.PROT_READ | syscall.PROT_WRITE | syscall.PROT_EXEC, syscall.MAP_PRIVATE | syscall.MAP_ANONYMOUS)
+	//fmt.Printf("DEBUG: assembling JIT blog for %d+%d\n", kk, chp.registers[vx])
+	block, err := gojit.Alloc(1024) // alloc 64B executable page
 	if err != nil{
-		panic(err)
+		panic("JIT allocation failed")
 	}
-	j := 0
- 	for i := range FunctionCode {
-  	memory[j] = byte(FunctionCode[i] >> 8)
-  	memory[j+1] = byte(FunctionCode[i])
-  	j = j + 2
+	kkpointer, err := strconv.ParseInt(fmt.Sprintf("%p", &kk), 0, 64)
+	vxpointer, err := strconv.ParseInt(fmt.Sprintf("%p", &chp.registers[x]), 0, 64)
+	kkpointeru := uint64(kkpointer)
+	vxpointeru := uint64(vxpointer)
+	fmt.Println(uint64(kkpointer), vxpointer)
+
+	Code := []uint64{
+		0x488b0425, kkpointeru, 0x488b1425, vxpointeru, 0x4801d0, 0x48890425, vxpointeru, 0xc3,
 	}
-	fmt.Println(memory)
-	f := (uintptr)(unsafe.Pointer(&memory))
-	r := *(*func() uint8) (unsafe.Pointer(&f))
-	r()
+
+	fmt.Println(Code)
+	temp := make([]byte, 0)
+	for i := range Code{
+		b := make([]byte, 8)
+		binary.LittleEndian.PutUint64(b, Code[i])
+		temp = append(temp, b...)
+		fmt.Println(temp)
+	}
+	block = temp
+	fmt.Println(block)
+	gojit.Release(block)
 }
