@@ -1,0 +1,6 @@
+github.com/edsrzf/mmap-go v1.0.0 h1:CEBF7HpRnUCSJgGUb5h1Gm7e3VkmVDrR8lvWVLtrOFw=
+github.com/edsrzf/mmap-go v1.0.0/go.mod h1:YO35OhQPt3KJa3ryjFM5Bs14WD66h8eGKpfaBNrHW5M=
+github.com/nelhage/gojit v0.0.0-20151106164540-4098a5faeff1 h1:g8k01bQfce23B9ptpuX+kpLRU3r4rRsX9G2uSvt9rug=
+github.com/nelhage/gojit v0.0.0-20151106164540-4098a5faeff1/go.mod h1:+cRwu9JqNetaXPMiVAdxzuYs7GZ4RpQpbV+ZjPWpsIY=
+golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f h1:gWF768j/LaZugp8dyS4UwsslYCYz9XgFxvlgsn0n9H8=
+golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
