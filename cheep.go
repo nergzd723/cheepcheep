@@ -25,6 +25,7 @@ type Cheep8 struct {
 	opc uint16
 	dT byte
 	sT byte
+	Draw bool
 }
 func ldfont(chp *Cheep8) error{
 	font := []byte{0xF0, 0x90, 0x90, 0x90, 0xF0,
@@ -65,6 +66,7 @@ func loadROM(rom string, chp *Cheep8){
 	for i := 0; i < 4096-512; i++ { // some space for a compiler
 		chp.mem[i+int(chp.pc)] = temp[i]	
 	}
+	chp.Draw = false
 }
 
 func updateTimers(chp *Cheep8){
@@ -107,7 +109,45 @@ func Interpret(chp *Cheep8){
 		chp.i = nnn
 		break
 	case 0xD000:
-		// skip drawing
+		// do not skip drawing
+		coord_x := chp.registers[x]
+		coord_y := chp.registers[y]
+		chp.Draw = true
+		chp.registers[0xF] = 0
+		i := uint16(0)
+		for i = 0; uint16(i) < n; i++ {
+			sprite_int := chp.mem[i + chp.i]
+			fmt.Println(sprite_int)
+			actual_y := coord_y + uint8(i)
+			b := uint8(0)
+			AND := uint8(1)
+			for b = 0; b < 8; b++{
+				//fmt.Println("here")
+				actual_x := coord_x + b
+				bit := sprite_int & AND
+				gfx_index := actual_y*64+actual_x
+				pixiel := chp.vram[gfx_index]
+				//fmt.Println(gfx_index, bit, pixiel)
+				if bit == 1 && pixiel == 1{
+					chp.registers[0xF] = 1
+					chp.vram[gfx_index] = 0
+				}
+				if bit == 1 && pixiel == 0{
+					chp.vram[gfx_index] = 1
+				}
+
+				if bit == 0 && pixiel == 0{
+					chp.vram[gfx_index] = 1
+				}
+
+				if bit == 0 && pixiel == 0{
+					chp.vram[gfx_index] = 0
+				}
+				AND = AND*2
+			}
+			
+		}
+		fmt.Println(chp.vram)
 		break
 	case 0x2000: // call subroutine at nnn
 		chp.sp++
@@ -136,11 +176,7 @@ func Interpret(chp *Cheep8){
 			panic("cheepcheep: bad opcode")
 		}
 	case 0x7000:
-		if (jit){
-			AssembleAddition(x, kk, chp)
-		}else{
-			chp.registers[x] += uint8(kk)
-		}
+		chp.registers[x] += uint8(kk)
 	case 0x3000:
 		if chp.registers[x] == uint8(kk){
 			chp.pc += 2

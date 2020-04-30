@@ -1,5 +1,5 @@
-mov rax, [0xFFFF]
-mov rdx, [0xFFFF]
+mov qword ptr rax, [0xc00001c152]
+mov rdx, [0xc00001c152]
 add rax, rdx
-mov [0xFFFF], rax
+mov [0xc00001c152], rax
 ret
