@@ -1,7 +1,4 @@
 package main
-// #cgo LDFLAGS: -lpyrec
-// #include <pyrec.h>
-// #include <stdint.h>
 import(
 	"fmt"
 	"github.com/nelhage/gojit"

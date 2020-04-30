@@ -153,6 +153,17 @@ func Interpret(chp *Cheep8){
 		chp.sp++
 		chp.stack[chp.sp] = chp.pc
 		chp.pc = nnn - 2
+	case 0xe000:
+		break // input
+	case 0x8000:
+		switch opcode & 0x000F{
+		case 0x0002:
+			chp.registers[x] = chp.registers[x] & chp.registers[y]
+		}
+	case 0x4000:
+		if uint8(kk) == chp.registers[x]{
+			chp.pc += 2
+		}
 	case 0xF000:
 		switch opcode & 0x00FF {
 		case 0x0033: // store BCD representation of Vx at [i], [i+1], [i+2]
